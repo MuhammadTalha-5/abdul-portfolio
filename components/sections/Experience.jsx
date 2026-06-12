@@ -6,6 +6,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import SectionHeading from "../SectionHeading";
 import { Reveal } from "../Reveal";
+import ExperienceGallery from "../ExperienceGallery";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -138,17 +139,31 @@ export default function Experience({ experience }) {
                       )}
                     </div>
 
-                    {job.responsibilities.length > 0 && (
-                      <ul className="mt-4 space-y-2">
-                        {job.responsibilities.map((r, j) => (
-                          <li
-                            key={j}
-                            className="relative pl-5 text-[0.95rem] leading-relaxed text-muted before:absolute before:left-0 before:top-2.5 before:h-1 before:w-1 before:rounded-full before:bg-accent"
-                          >
-                            {r}
-                          </li>
-                        ))}
-                      </ul>
+                    {(job.responsibilities.length > 0 ||
+                      job.images?.length > 0) && (
+                      <div className="mt-4 grid items-start gap-x-8 gap-y-6 md:grid-cols-[1.7fr_1fr]">
+                        {job.responsibilities.length > 0 && (
+                          <ul className="space-y-2">
+                            {job.responsibilities.map((r, j) => (
+                              <li
+                                key={j}
+                                className="relative pl-5 text-[0.95rem] leading-relaxed text-muted before:absolute before:left-0 before:top-2.5 before:h-1 before:w-1 before:rounded-full before:bg-accent"
+                              >
+                                {r}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+
+                        {job.images?.length > 0 && (
+                          <div className="md:sticky md:top-28 md:self-start">
+                            <p className="mb-3 text-xs font-medium uppercase tracking-[0.18em] text-muted">
+                              On the job
+                            </p>
+                            <ExperienceGallery images={job.images} />
+                          </div>
+                        )}
+                      </div>
                     )}
                   </div>
                 </Reveal>
