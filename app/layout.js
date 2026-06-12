@@ -28,12 +28,45 @@ export const metadata = {
     template: `%s · ${site.name}`,
   },
   description: site.defaultDescription,
+  applicationName: `${site.name} Portfolio`,
+  keywords: [
+    "HSE Officer",
+    "Safety Professional",
+    "Construction Safety",
+    "Risk Assessment",
+    "NEBOSH",
+    "OSHA",
+    "Abdul Haleem",
+    "portfolio",
+  ],
+  authors: [{ name: site.name, url: site.url }],
+  creator: site.name,
+  alternates: {
+    canonical: "/",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
   openGraph: {
     title: site.defaultTitle,
     description: site.defaultDescription,
     url: site.url,
     siteName: site.name,
+    locale: "en_US",
     type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: site.defaultTitle,
+    description: site.defaultDescription,
   },
 };
 

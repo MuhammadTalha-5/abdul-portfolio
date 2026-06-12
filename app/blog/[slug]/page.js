@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getPost, getPostSlugs } from "@/lib/wp";
+import { site } from "@/lib/site";
 
 export const revalidate = 60;
 
@@ -10,11 +11,37 @@ export async function generateStaticParams() {
   return slugs.map((slug) => ({ slug }));
 }
 
+const toText = (html) =>
+  (html || "")
+    .replace(/<[^>]*>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 160);
+
 export async function generateMetadata({ params }) {
   const { slug } = await params;
   const post = await getPost(slug);
   if (!post) return { title: "Post not found" };
-  return { title: post.title };
+
+  const description = toText(post.content);
+  return {
+    title: post.title,
+    description,
+    alternates: { canonical: `/blog/${slug}` },
+    openGraph: {
+      title: post.title,
+      description,
+      type: "article",
+      url: `${site.url}/blog/${slug}`,
+      publishedTime: post.date,
+      images: post.image ? [{ url: post.image.url }] : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description,
+    },
+  };
 }
 
 export default async function BlogPost({ params }) {
@@ -30,13 +57,27 @@ export default async function BlogPost({ params }) {
       })
     : "";
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    datePublished: post.date,
+    image: post.image?.url,
+    author: { "@type": "Person", name: site.name, url: site.url },
+    mainEntityOfPage: `${site.url}/blog/${slug}`,
+  };
+
   return (
     <article className="mx-auto max-w-3xl px-6 pb-24 pt-32">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Link
         href="/#blog"
         className="inline-flex items-center gap-1 text-sm font-medium text-muted transition-colors hover:text-accent"
       >
-        <span className="transition-transform group-hover:-translate-x-1">←</span>
+        <span>&larr;</span>
         Back to portfolio
       </Link>
 
