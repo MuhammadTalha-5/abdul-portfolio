@@ -59,6 +59,14 @@ export default function Experience({ experience }) {
               const dates = [fmtDate(job.start), fmtDate(job.end)]
                 .filter(Boolean)
                 .join(" — ");
+
+              // Optional details that stack under the date — only filled ones show.
+              const meta = [
+                job.consultant && { label: "Consultant", value: job.consultant },
+                job.client && { label: "Client", value: job.client },
+                job.contractor && { label: "Contractor", value: job.contractor },
+              ].filter(Boolean);
+
               return (
                 <Reveal key={job.id} delay={i * 0.05}>
                   <div className="relative">
@@ -66,16 +74,36 @@ export default function Experience({ experience }) {
                       <span className="h-3.5 w-3.5 rounded-full border-2 border-accent bg-bg" />
                     </span>
 
-                    <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-                      <h3 className="text-xl font-semibold text-ink">{job.title}</h3>
-                      {dates && (
-                        <span className="text-sm font-medium text-muted">{dates}</span>
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-8">
+                      {/* Left: role + company */}
+                      <div>
+                        <h3 className="text-xl font-semibold text-ink">{job.title}</h3>
+                        {(job.company || job.location) && (
+                          <p className="mt-1 text-sm font-medium text-accent">
+                            {[job.company, job.location].filter(Boolean).join(" · ")}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Right: date, then consultant / client / contractor / location */}
+                      {(dates || meta.length > 0) && (
+                        <div className="shrink-0 text-sm sm:max-w-[16rem] sm:text-right">
+                          {dates && (
+                            <p className="font-medium text-muted">{dates}</p>
+                          )}
+                          {meta.length > 0 && (
+                            <dl className="mt-1.5 space-y-0.5">
+                              {meta.map((m) => (
+                                <div key={m.label}>
+                                  <dt className="inline text-muted">{m.label}: </dt>
+                                  <dd className="inline text-ink/80">{m.value}</dd>
+                                </div>
+                              ))}
+                            </dl>
+                          )}
+                        </div>
                       )}
                     </div>
-
-                    <p className="mt-1 text-sm font-medium text-accent">
-                      {[job.company, job.location].filter(Boolean).join(" · ")}
-                    </p>
 
                     {job.responsibilities.length > 0 && (
                       <ul className="mt-4 space-y-2">
