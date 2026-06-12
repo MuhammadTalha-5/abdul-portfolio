@@ -1,36 +1,76 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Abdul — Portfolio (Headless WordPress + Next.js 16)
 
-## Getting Started
+A light, minimal, scroll-animated portfolio. Content is editable in WordPress
+(ACF + WPGraphQL) and rendered by Next.js with ISR, deployed on Vercel.
 
-First, run the development server:
+## Stack
+
+- **Next.js 16** (App Router, React 19, Turbopack)
+- **Tailwind CSS v4** — design tokens in `app/globals.css`
+- **Framer Motion** — reveals, parallax, count-ups, nav transitions
+- **GSAP + ScrollTrigger** — scroll-driven timeline (Experience)
+- **Lenis** — smooth scrolling (synced with GSAP)
+- **WPGraphQL + ACF (free)** — content from `cms.qarigroup.com`
+
+## Getting started
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+cp .env.example .env.local   # then edit values
+npm run dev                  # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Environment variables (`.env.local`)
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+| Variable             | Purpose                                                |
+| -------------------- | ------------------------------------------------------ |
+| `WORDPRESS_API_URL`  | WPGraphQL endpoint, e.g. `https://cms.qarigroup.com/graphql` |
+| `REVALIDATE_SECRET`  | Shared secret for the on-demand revalidation webhook   |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## How content flows
 
-## Learn More
+`lib/queries.js` (GraphQL) → `lib/wp.js` (fetch + normalize, with an 8s abort
+timeout and graceful fallback to `lib/fallback.js`) → `app/page.js` (server,
+`revalidate = 60`) → section components in `components/sections/`.
 
-To learn more about Next.js, take a look at the following resources:
+If the CMS is empty or unreachable, placeholder content renders so the site
+never breaks. Real WordPress content always takes precedence.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Structure
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+app/
+  layout.js            Fonts, metadata, SmoothScroll + ScrollProgress
+  page.js              Fetches data, renders all sections (ISR)
+  blog/[slug]/page.js  Single blog post (SSG + ISR)
+  api/revalidate/      On-demand revalidation webhook
+components/
+  SmoothScroll, Reveal, Nav, Footer, ScrollProgress, SectionHeading
+  sections/            Hero, About, Experience, Achievements,
+                       Certifications, Projects, Blog, Contact
+lib/
+  site.js  queries.js  wp.js  fallback.js
+```
 
-## Deploy on Vercel
+## Keeping the site fresh (on-demand revalidation)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+The site refreshes every 60s automatically. To update instantly when you
+publish in WordPress, call the webhook with your secret:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+https://abdul.qarigroup.com/api/revalidate?secret=YOUR_SECRET
+```
+
+Easiest setup: install the **WP Webhooks** plugin and fire this URL on
+post create/update, or add a small `save_post` snippet in WordPress.
+
+## Deploy (Vercel)
+
+1. Push this repo to GitHub.
+2. Import it on Vercel.
+3. Add `WORDPRESS_API_URL` and `REVALIDATE_SECRET` as Environment Variables.
+4. Deploy, then add the custom domain `abdul.qarigroup.com` and point its
+   DNS (CNAME) at Vercel in Hostinger.
+
+> Note: `next.config.mjs` whitelists `cms.qarigroup.com` (and `*.qarigroup.com`)
+> for `next/image`. Add any other media host there if needed.
