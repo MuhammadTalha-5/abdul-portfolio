@@ -15,7 +15,7 @@ export default function Contact({ contact }) {
 
   return (
     <section id="contact" className="section mx-auto max-w-6xl px-6 py-24 md:py-32">
-      <div className="overflow-hidden rounded-[2.5rem] border border-line bg-surface p-10 md:p-16">
+      <div className="overflow-hidden rounded-3xl border border-line bg-surface p-6 sm:rounded-[2.5rem] sm:p-10 md:p-16">
         <SectionHeading eyebrow="Contact" title="Let's work together" />
 
         <div className="grid gap-10 md:grid-cols-[1.2fr_1fr]">
@@ -28,10 +28,10 @@ export default function Contact({ contact }) {
               <motion.a
                 whileHover={{ x: 4 }}
                 href={`mailto:${contact.email}`}
-                className="mt-8 inline-flex items-center gap-3 font-serif text-2xl font-medium text-ink underline decoration-accent decoration-2 underline-offset-4 md:text-3xl"
+                className="mt-8 flex w-full max-w-full items-center gap-2 break-all font-serif text-lg font-medium text-ink underline decoration-accent decoration-2 underline-offset-4 sm:text-2xl md:text-3xl"
               >
-                {contact.email}
-                <span className="text-accent">&rarr;</span>
+                <span className="break-all">{contact.email}</span>
+                <span className="shrink-0 text-accent">&rarr;</span>
               </motion.a>
             )}
           </Reveal>
@@ -43,7 +43,7 @@ export default function Contact({ contact }) {
                   <dt className="text-xs font-medium uppercase tracking-[0.16em] text-muted">
                     {item.label}
                   </dt>
-                  <dd className="mt-1 text-ink">
+                  <dd className="mt-1 break-words text-ink">
                     {item.href ? (
                       <a
                         href={item.href}
