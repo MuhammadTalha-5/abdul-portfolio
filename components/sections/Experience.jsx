@@ -85,8 +85,8 @@ export default function Experience({ experience }) {
                 ? `${startLabel} \u2014 ${endLabel || "Present"}`
                 : endLabel;
 
-              // Duration only for completed roles; current roles just show "Present".
-              const dur = job.end ? durationLabel(job.start, job.end) : "";
+              // Duration for all roles (current ones count up to today).
+              const dur = durationLabel(job.start, job.end);
 
               // Optional details that stack under the date — only filled ones show.
               const meta = [
