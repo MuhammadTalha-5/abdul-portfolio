@@ -30,8 +30,7 @@ export default function Blog({ posts }) {
         {posts.length === 0 ? (
           <Reveal>
             <div className="rounded-2xl border border-dashed border-line bg-bg p-10 text-center text-muted">
-              New articles are on the way. Publish a post in WordPress and it
-              will appear here automatically.
+              New articles are on the way. Check back soon.
             </div>
           </Reveal>
         ) : (
