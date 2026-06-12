@@ -18,6 +18,28 @@ function fmtDate(value) {
   return d.toLocaleDateString("en-US", { month: "short", year: "numeric" });
 }
 
+// Whole-year/month span between start and end (end defaults to now for current roles).
+function durationLabel(start, end) {
+  if (!start) return "";
+  const s = new Date(start);
+  if (Number.isNaN(s.getTime())) return "";
+  const e = end ? new Date(end) : new Date();
+  if (Number.isNaN(e.getTime())) return "";
+
+  let months =
+    (e.getFullYear() - s.getFullYear()) * 12 + (e.getMonth() - s.getMonth());
+  if (e.getDate() < s.getDate()) months -= 1; // not a full month yet
+  if (months < 0) return "";
+  months += 1; // count the starting month inclusively
+
+  const years = Math.floor(months / 12);
+  const rem = months % 12;
+  const parts = [];
+  if (years > 0) parts.push(`${years} yr${years > 1 ? "s" : ""}`);
+  if (rem > 0) parts.push(`${rem} mo${rem > 1 ? "s" : ""}`);
+  return parts.join(" ");
+}
+
 export default function Experience({ experience }) {
   const container = useRef(null);
   const line = useRef(null);
@@ -56,9 +78,15 @@ export default function Experience({ experience }) {
 
           <div className="space-y-12">
             {experience.map((job, i) => {
-              const dates = [fmtDate(job.start), fmtDate(job.end)]
-                .filter(Boolean)
-                .join(" — ");
+              // Empty End Date on a job means it's current -> show "Present".
+              const startLabel = fmtDate(job.start);
+              const endLabel = fmtDate(job.end);
+              const dates = startLabel
+                ? `${startLabel} \u2014 ${endLabel || "Present"}`
+                : endLabel;
+
+              // Duration only for completed roles; current roles just show "Present".
+              const dur = job.end ? durationLabel(job.start, job.end) : "";
 
               // Optional details that stack under the date — only filled ones show.
               const meta = [
@@ -89,7 +117,12 @@ export default function Experience({ experience }) {
                       {(dates || meta.length > 0) && (
                         <div className="shrink-0 text-sm sm:max-w-[16rem] sm:text-right">
                           {dates && (
-                            <p className="font-medium text-muted">{dates}</p>
+                            <p className="font-medium text-muted">
+                              {dates}
+                              {dur && (
+                                <span className="text-muted/70"> · {dur}</span>
+                              )}
+                            </p>
                           )}
                           {meta.length > 0 && (
                             <dl className="mt-1.5 space-y-0.5">
