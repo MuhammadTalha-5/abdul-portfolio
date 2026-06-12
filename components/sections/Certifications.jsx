@@ -21,15 +21,24 @@ export default function Certifications({ certifications }) {
           {certifications.map((c) => (
             <RevealItem key={c.id}>
               <div className="group overflow-hidden rounded-2xl border border-line bg-bg transition-all hover:-translate-y-1 hover:border-accent hover:shadow-lg hover:shadow-accent/5">
-                <div className="relative aspect-[4/3] overflow-hidden bg-accent-soft">
+                <div
+                  className="relative aspect-[4/3] overflow-hidden bg-accent-soft"
+                  onContextMenu={(e) => e.preventDefault()}
+                  onDragStart={(e) => e.preventDefault()}
+                >
                   {c.image ? (
-                    <Image
-                      src={c.image.url}
-                      alt={c.image.alt || c.title}
-                      fill
-                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                      className="object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
+                    <>
+                      <Image
+                        src={c.image.url}
+                        alt={c.image.alt || c.title}
+                        fill
+                        draggable={false}
+                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                        className="no-img-actions object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                      {/* Transparent shield: intercepts right-click / drag / long-press */}
+                      <span aria-hidden className="absolute inset-0 z-10" />
+                    </>
                   ) : (
                     <div className="flex h-full w-full items-center justify-center text-4xl text-accent/40">
                       ⬡

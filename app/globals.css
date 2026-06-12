@@ -100,3 +100,13 @@ html.lenis body {
     transition-duration: 0.001ms !important;
   }
 }
+
+/* Discourage saving/dragging protected images (e.g. certificates) */
+.no-img-actions {
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none; /* hides iOS long-press "Save Image" menu */
+  pointer-events: none;
+}
